@@ -1,42 +1,55 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>진품 여부 확인</title>
+  <title>진품 확인 시스템</title>
   <style>
     body {
       font-family: sans-serif;
       text-align: center;
       padding: 40px;
-      background-color: #f7f7f7;
     }
     .result {
       font-size: 24px;
-      padding: 20px;
-      border-radius: 12px;
-      background-color: white;
-      display: inline-block;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-top: 20px;
     }
-    .valid { color: green; }
-    .invalid { color: red; }
+    .valid {
+      color: green;
+    }
+    .invalid {
+      color: red;
+    }
   </style>
 </head>
 <body>
   <h1>제품 진품 여부 확인</h1>
-  <div class="result" id="result"></div>
+  <div id="productInfo" class="result"></div>
 
   <script>
-    const expectedURL = "https://kumhoschool.netlify.app/";
-    const currentURL = window.location.href;
+    // 샘플 데이터베이스
+    const productDB = {
+      "12345": { name: "루이비통 가방", isAuthentic: true },
+      "54321": { name: "나이키 운동화", isAuthentic: false },
+      "20240611": { name: "샘플 시계", isAuthentic: true }
+    };
 
-    const resultEl = document.getElementById("result");
+    // URL에서 ID 추출
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get("id");
 
-    if (currentURL === expectedURL || currentURL === expectedURL + "/") {
-      resultEl.innerHTML = `<p class="valid">✅ 이 제품은 진품입니다.</p>`;
+    const display = document.getElementById("productInfo");
+
+    if (productId && productDB[productId]) {
+      const product = productDB[productId];
+      display.innerHTML = `
+        <p>제품명: <strong>${product.name}</strong></p>
+        <p class="${product.isAuthentic ? "valid" : "invalid"}">
+          ${product.isAuthentic ? "✅ 진품입니다" : "❌ 가품입니다"}
+        </p>
+      `;
     } else {
-      resultEl.innerHTML = `<p class="invalid">❌ 이 제품은 진품이 아닙니다.</p>`;
+      display.innerHTML = "<p class='invalid'>❗ 해당 제품 정보를 찾을 수 없습니다</p>";
     }
   </script>
 </body>
