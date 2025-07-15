@@ -1,55 +1,82 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>진품 확인 시스템</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>임대 계약 상태 확인</title>
   <style>
     body {
       font-family: sans-serif;
-      text-align: center;
+      background-color: #f1f5f9;
       padding: 40px;
+      text-align: center;
     }
-    .result {
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      max-width: 400px;
+      margin: auto;
+    }
+    .status {
       font-size: 24px;
       margin-top: 20px;
     }
-    .valid {
+    .occupied {
+      color: red;
+    }
+    .available {
       color: green;
     }
-    .invalid {
-      color: red;
+    input {
+      padding: 10px;
+      font-size: 16px;
+      width: 80%;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-top: 10px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <h1>제품 진품 여부 확인</h1>
-  <div id="productInfo" class="result"></div>
+  <div class="card">
+    <h1>🏠 임대 상태 확인</h1>
+    <p>건물 ID 또는 주소를 입력하세요:</p>
+    <input type="text" id="propertyId" placeholder="예: apt-101" />
+    <br />
+    <button onclick="checkRental()">조회</button>
+    <div class="status" id="result"></div>
+  </div>
 
   <script>
-    // 샘플 데이터베이스
-    const productDB = {
-      "12345": { name: "루이비통 가방", isAuthentic: true },
-      "54321": { name: "나이키 운동화", isAuthentic: false },
-      "20240611": { name: "샘플 시계", isAuthentic: true }
+    // 예시 데이터: 블록체인에 등록된 임대 상태 (데모용)
+    const rentalStatus = {
+      "apt-101": "occupied",
+      "apt-102": "available",
+      "villa-201": "occupied",
+      "house-001": "available"
     };
 
-    // URL에서 ID 추출
-    const urlParams = new URLSearchParams(window.location.search);
-    const productId = urlParams.get("id");
+    function checkRental() {
+      const input = document.getElementById("propertyId").value.trim().toLowerCase();
+      const result = document.getElementById("result");
 
-    const display = document.getElementById("productInfo");
-
-    if (productId && productDB[productId]) {
-      const product = productDB[productId];
-      display.innerHTML = `
-        <p>제품명: <strong>${product.name}</strong></p>
-        <p class="${product.isAuthentic ? "valid" : "invalid"}">
-          ${product.isAuthentic ? "✅ 진품입니다" : "❌ 가품입니다"}
-        </p>
-      `;
-    } else {
-      display.innerHTML = "<p class='invalid'>❗ 해당 제품 정보를 찾을 수 없습니다</p>";
+      if (input in rentalStatus) {
+        if (rentalStatus[input] === "occupied") {
+          result.innerHTML = "❌ 현재 이 부동산은 이미 계약됨";
+          result.className = "status occupied";
+        } else {
+          result.innerHTML = "✅ 이 부동산은 현재 계약 가능";
+          result.className = "status available";
+        }
+      } else {
+        result.innerHTML = "❓ 해당 정보를 찾을 수 없습니다";
+        result.className = "status";
+      }
     }
   </script>
 </body>
